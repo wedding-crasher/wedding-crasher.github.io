@@ -38,6 +38,16 @@ plugins:
 nav_order: 2
 
 
+##Call outs
+callouts:
+  warning:
+    title: Warning
+    color: red
+  note:
+    title: Note
+    color: purple
+
+
 
 # Exclude from processing.
 # The following items will not be processed, by default.
