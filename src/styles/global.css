@@ -177,6 +177,15 @@ img {
   gap: 1.25rem;
 }
 
+.article-shell {
+  padding: 2rem 0 4.5rem;
+}
+
+.article-shell .article-card {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
 .home-hero,
 .home-dossier,
 .home-ribbon,

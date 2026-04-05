@@ -1,25 +1,24 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import SidebarProfile from "../../components/SidebarProfile.astro";
-import { formatDate, getCategories, getPublishedPosts, slugifyCategory } from "../../utils/blog";
+import { formatDate, getPublishedPosts, slugifyCategory } from "../../utils/blog";
 
 export async function getStaticPaths() {
   const posts = getPublishedPosts(await getCollection("blog"));
 
   return posts.map((post) => ({
     params: { slug: post.slug },
-    props: { post, categories: getCategories(posts) }
+    props: { post }
   }));
 }
 
-const { post, categories } = Astro.props;
+const { post } = Astro.props;
 const { Content } = await post.render();
 const categorySlug = slugifyCategory(post.data.category);
 ---
 
 <BaseLayout title={`${post.data.title} | Hangwoo Cho`} description={post.data.description}>
-  <main class="page-frame article-grid">
+  <main class="page-frame article-shell">
     <article class="article-card">
       <a class="back-link" href="/">Back to archive</a>
 
@@ -46,7 +45,5 @@ const categorySlug = slugifyCategory(post.data.category);
         <Content />
       </div>
     </article>
-
-    <SidebarProfile categories={categories} />
   </main>
 </BaseLayout>
