@@ -1,22 +1,16 @@
 ---
-import { getCollection } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import BlogArchive from "../../components/BlogArchive.astro";
-import { getCategories, getPublishedPosts } from "../../utils/blog";
-
-const posts = getPublishedPosts(await getCollection("blog"));
-const categories = getCategories(posts);
+const destination = "/";
 ---
 
-<BaseLayout
-  title="Blog Archive | Hangwoo Cho"
-  description="Machine Learning Engineer, LLM Engineer, MLOps 카테고리로 정리한 엔지니어링 블로그 아카이브"
->
-  <BlogArchive
-    posts={posts}
-    categories={categories}
-    eyebrow="Blog"
-    pageTitle="전체 글을 탐색하는 순수 아카이브"
-    pageDescription="Home이 블로그의 관점과 대표 글을 보여주는 랜딩이라면, Blog는 카테고리와 날짜 기준으로 글을 훑는 탐색 화면입니다."
-  />
-</BaseLayout>
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0;url=${destination}`} />
+    <link rel="canonical" href={destination} />
+    <title>Redirecting…</title>
+  </head>
+  <body>
+    <p><a href={destination}>Go to the archive</a></p>
+  </body>
+</html>
