@@ -7,7 +7,7 @@ export async function GET(context) {
 
   return rss({
     title: "Hangwoo Cho | Engineering Notes",
-    description: "Notes on enterprise AI and ML work from a Solution Engineer on Microsoft's AI Build Team in Korea.",
+    description: "Engineering Notes on building AI and ML with enterprises in Korea, and writing down the lessons learned.",
     site: context.site,
     items: posts.map((post) => ({
       title: post.data.title,
