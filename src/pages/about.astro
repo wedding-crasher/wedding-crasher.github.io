@@ -8,44 +8,45 @@ const posts = getPublishedPosts(await getCollection("blog"));
 const categories = getCategories(posts);
 ---
 
-<BaseLayout title="About | Hangwoo Cho" description="A profile page describing the purpose of the blog and the themes behind the writing.">
+<BaseLayout title="About | Hangwoo Cho" description="A profile page describing my role on Microsoft's AI Build Team in Korea and the enterprise AI themes behind this blog.">
   <main class="page-frame article-grid">
     <section class="article-card about-card">
       <p class="sidebar-label">Profile</p>
-      <h1>I am building a blog that keeps the engineering context intact</h1>
+      <h1>I work on enterprise AI and ML problems as a Solution Engineer</h1>
       <p>
-        The center of this site is the blog. I use it to document incidents, bottlenecks, design
-        changes, release strategy, and team-level decision making from real ML and LLM systems,
-        while letting that body of work speak for the profile around it.
+        I am a Solution Engineer on Microsoft's AI Build Team in Korea. My work centers on helping
+        organizations solve enterprise business problems with AI and ML, and this blog is where I
+        document the technical decisions, delivery trade-offs, and operating realities behind that work.
       </p>
 
       <div class="about-grid">
         <section>
           <h2>What this blog covers</h2>
           <ul>
-            <li>Model quality, experimentation, and delivery from a Machine Learning Engineer perspective</li>
-            <li>Prompting, evaluation, RAG, and cost trade-offs from an LLM Engineer perspective</li>
-            <li>Deployment, monitoring, reproducibility, and operating workflows from an MLOps perspective</li>
+            <li>Enterprise use cases where AI and ML have to align with real business constraints</li>
+            <li>LLM system design, evaluation, retrieval, and adoption patterns in production settings</li>
+            <li>Delivery trade-offs across architecture, deployment, monitoring, and stakeholder communication</li>
           </ul>
         </section>
 
         <section>
           <h2>How I want the writing to read</h2>
           <ul>
-            <li>The shape of the problem should appear before the polished result</li>
-            <li>The decision criteria should outlast the one-off tip</li>
-            <li>The archive should feel like an engineering log, not a static portfolio</li>
+            <li>The business problem and the engineering constraint should be clear from the start</li>
+            <li>The decision criteria should matter as much as the technical implementation</li>
+            <li>The archive should read like field notes from real enterprise AI work</li>
           </ul>
         </section>
       </div>
 
       <section class="timeline-card">
-        <h2>Quick bio slots</h2>
-        <p>This section is intentionally lightweight so it can be swapped out with a real bio later.</p>
+        <h2>Current profile</h2>
+        <p>A concise summary of the context behind the writing on this site.</p>
         <ul>
-          <li>Current role: company, team, and the product or platform you work on</li>
-          <li>Interests: LLM systems, search, evaluation, MLOps</li>
-          <li>Contact: GitHub, LinkedIn, email</li>
+          <li>Role: Solution Engineer</li>
+          <li>Team: Microsoft AI Build Team</li>
+          <li>Location: Korea</li>
+          <li>Focus: solving enterprise business problems with AI and ML</li>
         </ul>
       </section>
     </section>
