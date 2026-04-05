@@ -53,7 +53,6 @@ const { categories } = Astro.props;
         categories.map((category) => (
           <a class="category-pill" href={`/blog/category/${category.slug}/`}>
             <span>{category.label}</span>
-            <strong>{category.count}</strong>
           </a>
         ))
       }

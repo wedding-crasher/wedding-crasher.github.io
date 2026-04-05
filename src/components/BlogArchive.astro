@@ -34,21 +34,6 @@ const {
       <h1>{pageTitle}</h1>
       <p>{pageDescription}</p>
     </div>
-
-    <div class="archive-stats">
-      <div class="archive-stat">
-        <span>Posts</span>
-        <strong>{posts.length}</strong>
-      </div>
-      <div class="archive-stat">
-        <span>Categories</span>
-        <strong>{categories.length}</strong>
-      </div>
-      <a class="archive-stat archive-stat--link" href="/rss.xml">
-        <span>Feed</span>
-        <strong>RSS</strong>
-      </a>
-    </div>
   </section>
 
   <section class="archive-toolbar surface-card">
@@ -65,7 +50,6 @@ const {
           href={`/blog/category/${category.slug}/`}
         >
           {category.label}
-          <strong>{category.count}</strong>
         </a>
       ))
     }

@@ -323,7 +323,6 @@ img {
 
 .dossier-grid dt,
 .signal-card span,
-.archive-stat span,
 .post-card__cta {
   font-family: "Space Grotesk", sans-serif;
   font-size: 0.8rem;
@@ -353,8 +352,7 @@ img {
   border: 1px solid rgba(16, 24, 38, 0.08);
 }
 
-.signal-card strong,
-.archive-stat strong {
+.signal-card strong {
   display: block;
   margin-top: 0.35rem;
   font-family: "Space Grotesk", sans-serif;
@@ -452,14 +450,6 @@ img {
   transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.track-pill strong,
-.category-pill strong,
-.filter-chip strong {
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-
 .post-card__category {
   padding: 0.45rem 0.8rem;
   background: var(--accent-soft);
@@ -491,32 +481,13 @@ img {
 }
 
 .archive-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
-  gap: 1rem;
+  display: block;
   background: linear-gradient(180deg, rgba(255, 252, 246, 0.9), rgba(247, 242, 235, 0.78));
 }
 
 .archive-intro {
   display: grid;
   gap: 0.8rem;
-}
-
-.archive-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-.archive-stat {
-  padding: 1rem;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.58);
-  border: 1px solid rgba(16, 24, 38, 0.08);
-}
-
-.archive-stat--link {
-  justify-content: space-between;
 }
 
 .archive-toolbar {
