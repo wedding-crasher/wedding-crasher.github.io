@@ -1,0 +1,24 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BlogHome from "../components/BlogHome.astro";
+import { getCategories, getFeaturedPost, getPublishedPosts } from "../utils/blog";
+
+const posts = getPublishedPosts(await getCollection("blog"));
+const categories = getCategories(posts);
+const featuredPost = getFeaturedPost(posts);
+---
+
+<BaseLayout
+  title="Hangwoo Cho | Blog-first engineering portfolio"
+  description="회사에서 진행한 ML과 LLM 프로젝트의 문제 상황, 트레이드오프, 해결 과정을 기록하는 개발 블로그"
+>
+  <BlogHome
+    posts={posts}
+    categories={categories}
+    featuredPost={featuredPost}
+    eyebrow="Blog-first portfolio"
+    pageTitle="회사에서 맞닥뜨린 ML, LLM 문제를 정리하는 개발 블로그"
+    pageDescription="프로젝트 자랑보다 시행착오와 의사결정이 보이도록 씁니다. 모델 성능보다 운영 문제, 팀 협업, 배포 이슈, 관측 가능성까지 남기는 엔지니어링 노트입니다."
+  />
+</BaseLayout>

@@ -1,0 +1,78 @@
+---
+import PostCard from "./PostCard.astro";
+import SidebarProfile from "./SidebarProfile.astro";
+import type { BlogEntry } from "../utils/blog";
+import { formatDate, slugifyCategory } from "../utils/blog";
+
+interface CategoryLink {
+  label: string;
+  slug: string;
+  count: number;
+}
+
+interface Props {
+  posts: BlogEntry[];
+  categories: CategoryLink[];
+  pageTitle: string;
+  pageDescription: string;
+  featuredPost?: BlogEntry;
+  eyebrow?: string;
+}
+
+const {
+  posts,
+  categories,
+  pageTitle,
+  pageDescription,
+  featuredPost,
+  eyebrow = "From the field"
+} = Astro.props;
+
+const remainingPosts = featuredPost ? posts.filter((post) => post.slug !== featuredPost.slug) : posts;
+const featuredCategory = featuredPost ? slugifyCategory(featuredPost.data.category) : "";
+---
+
+<main class="page-frame home-grid">
+  <section class="content-column">
+    <section class="hero-panel">
+      <p class="hero-panel__eyebrow">{eyebrow}</p>
+      <h1>{pageTitle}</h1>
+      <p>{pageDescription}</p>
+    </section>
+
+    {
+      featuredPost && (
+        <a class="featured-story" href={`/blog/${featuredPost.slug}/`}>
+          <div class="featured-story__meta-row">
+            <span>Featured note</span>
+            <time datetime={featuredPost.data.publishDate.toISOString()}>
+              {formatDate(featuredPost.data.publishDate)}
+            </time>
+          </div>
+          <h2>{featuredPost.data.title}</h2>
+          <p>{featuredPost.data.description}</p>
+          <div class="featured-story__footer">
+            <span class="post-card__category post-card__category--inline">{featuredPost.data.category}</span>
+            <span class="text-link">Read article</span>
+          </div>
+        </a>
+      )
+    }
+
+    <section class="section-block">
+      <div class="section-heading">
+        <div>
+          <p class="sidebar-label">Latest posts</p>
+          <h2>최근 글</h2>
+        </div>
+        <span>{posts.length} posts</span>
+      </div>
+
+      <div class="post-stack">
+        {remainingPosts.map((post) => <PostCard post={post} />)}
+      </div>
+    </section>
+  </section>
+
+  <SidebarProfile categories={categories} />
+</main>

@@ -1,0 +1,55 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SidebarProfile from "../components/SidebarProfile.astro";
+import { getCategories, getPublishedPosts } from "../utils/blog";
+
+const posts = getPublishedPosts(await getCollection("blog"));
+const categories = getCategories(posts);
+---
+
+<BaseLayout title="About | Hangwoo Cho" description="개발 블로그 운영 목적과 개인 프로필을 소개하는 페이지">
+  <main class="page-frame article-grid">
+    <section class="article-card about-card">
+      <p class="sidebar-label">Profile</p>
+      <h1>프로젝트 경험이 남는 개발 블로그를 만들고 있습니다</h1>
+      <p>
+        이 사이트의 중심은 블로그입니다. 회사에서 ML과 LLM 시스템을 운영하며 겪은 장애, 병목,
+        설계 변경, 배포 전략, 팀 커뮤니케이션을 글로 남기고, 그 맥락이 개인 프로필로 이어지도록
+        구성했습니다.
+      </p>
+
+      <div class="about-grid">
+        <section>
+          <h2>이 블로그에서 다루는 것</h2>
+          <ul>
+            <li>Machine Learning Engineer 관점의 모델 품질과 실험 관리</li>
+            <li>LLM Engineer 관점의 프롬프트, 평가, RAG, 비용 문제</li>
+            <li>MLOps 관점의 배포, 모니터링, 재현성, 운영 자동화</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>어떻게 읽히길 원하는가</h2>
+          <ul>
+            <li>잘된 결과보다 문제의 형태와 해결 이유가 먼저 보이게</li>
+            <li>짧은 팁보다 실제 프로젝트에서 통했던 판단 기준이 남게</li>
+            <li>포트폴리오가 아니라 엔지니어링 로그처럼 쌓이게</li>
+          </ul>
+        </section>
+      </div>
+
+      <section class="timeline-card">
+        <h2>Quick bio slots</h2>
+        <p>아래 영역은 실제 약력으로 교체하기 쉽도록 자리만 잡아두었습니다.</p>
+        <ul>
+          <li>Current role: 회사명, 팀, 맡고 있는 플랫폼 또는 제품</li>
+          <li>Interests: LLM systems, search, evaluation, MLOps</li>
+          <li>Contact: GitHub, LinkedIn, email</li>
+        </ul>
+      </section>
+    </section>
+
+    <SidebarProfile categories={categories} />
+  </main>
+</BaseLayout>

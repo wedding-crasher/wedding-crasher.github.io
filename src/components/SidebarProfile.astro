@@ -1,0 +1,67 @@
+---
+interface CategoryLink {
+  label: string;
+  slug: string;
+  count: number;
+}
+
+interface Props {
+  categories: CategoryLink[];
+}
+
+const { categories } = Astro.props;
+---
+
+<aside class="sidebar-stack">
+  <section class="sidebar-card profile-card">
+    <img
+      class="profile-card__image"
+      src="/images/profile-placeholder.svg"
+      alt="Profile placeholder"
+      width="320"
+      height="240"
+    />
+    <p class="sidebar-label">About me</p>
+    <h2>회사에서 부딪힌 문제를 기록하는 엔지니어링 로그</h2>
+    <p>
+      ML과 LLM 시스템을 실제 서비스에 올리며 겪은 병목, 의사결정, 운영 이슈를 정리합니다.
+      프로필 사진과 약력은 이 영역만 교체하면 바로 개인 브랜딩 섹션으로 사용할 수 있습니다.
+    </p>
+    <div class="profile-card__meta">
+      <span>Seoul</span>
+      <span>Open to technical writing</span>
+    </div>
+  </section>
+
+  <section class="sidebar-card compact-card">
+    <p class="sidebar-label">Focus areas</p>
+    <ul class="focus-list">
+      <li>Machine Learning Engineer</li>
+      <li>LLM Engineer</li>
+      <li>MLOps</li>
+      <li>Applied AI</li>
+    </ul>
+  </section>
+
+  <section class="sidebar-card compact-card">
+    <p class="sidebar-label">Categories</p>
+    <div class="category-list">
+      {
+        categories.map((category) => (
+          <a class="category-pill" href={`/blog/category/${category.slug}/`}>
+            <span>{category.label}</span>
+            <strong>{category.count}</strong>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="sidebar-card compact-card accent-card">
+    <p class="sidebar-label">Positioning</p>
+    <p>
+      단순 회고가 아니라, 문제 상황과 의사결정의 이유가 보이도록 쓰는 블로그를 목표로 합니다.
+    </p>
+    <a class="text-link" href="/about/">View profile details</a>
+  </section>
+</aside>

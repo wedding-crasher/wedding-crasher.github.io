@@ -1,0 +1,30 @@
+---
+import type { BlogEntry } from "../utils/blog";
+import { formatDate, slugifyCategory } from "../utils/blog";
+
+interface Props {
+  post: BlogEntry;
+}
+
+const { post } = Astro.props;
+const categorySlug = slugifyCategory(post.data.category);
+---
+
+<article class="post-card">
+  <div class="post-card__meta-row">
+    <a class="post-card__category" href={`/blog/category/${categorySlug}/`}>
+      {post.data.category}
+    </a>
+    <time datetime={post.data.publishDate.toISOString()}>{formatDate(post.data.publishDate)}</time>
+  </div>
+
+  <h2>
+    <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+  </h2>
+
+  <p>{post.data.description}</p>
+
+  <div class="tag-list">
+    {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+  </div>
+</article>

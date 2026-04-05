@@ -1,0 +1,24 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import BlogHome from "../../components/BlogHome.astro";
+import { getCategories, getFeaturedPost, getPublishedPosts } from "../../utils/blog";
+
+const posts = getPublishedPosts(await getCollection("blog"));
+const categories = getCategories(posts);
+const featuredPost = getFeaturedPost(posts);
+---
+
+<BaseLayout
+  title="Blog Archive | Hangwoo Cho"
+  description="Machine Learning Engineer, LLM Engineer, MLOps 카테고리로 정리한 엔지니어링 블로그 아카이브"
+>
+  <BlogHome
+    posts={posts}
+    categories={categories}
+    featuredPost={featuredPost}
+    eyebrow="Writing archive"
+    pageTitle="카테고리별로 쌓아가는 엔지니어링 아카이브"
+    pageDescription="Machine Learning Engineer, LLM Engineer, MLOps 같은 트랙으로 글을 정리해 빠르게 탐색할 수 있게 구성했습니다."
+  />
+</BaseLayout>

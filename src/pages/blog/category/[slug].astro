@@ -1,0 +1,37 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import BlogHome from "../../../components/BlogHome.astro";
+import { getCategories, getPublishedPosts, slugifyCategory } from "../../../utils/blog";
+
+export async function getStaticPaths() {
+  const posts = getPublishedPosts(await getCollection("blog"));
+  const categories = getCategories(posts);
+
+  return categories.map((category) => ({
+    params: { slug: category.slug },
+    props: {
+      category,
+      categories,
+      posts: posts.filter((post) => slugifyCategory(post.data.category) === category.slug)
+    }
+  }));
+}
+
+const { category, categories, posts } = Astro.props;
+const featuredPost = posts[0];
+---
+
+<BaseLayout
+  title={`${category.label} | Hangwoo Cho`}
+  description={`${category.label} 관련 글을 모아둔 카테고리 페이지`}
+>
+  <BlogHome
+    posts={posts}
+    categories={categories}
+    featuredPost={featuredPost}
+    eyebrow="Category archive"
+    pageTitle={`${category.label} 카테고리`}
+    pageDescription={`${category.label} 트랙에서 겪은 문제와 시행착오를 카테고리 단위로 모았습니다.`}
+  />
+</BaseLayout>

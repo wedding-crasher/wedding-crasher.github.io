@@ -1,0 +1,52 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SidebarProfile from "../../components/SidebarProfile.astro";
+import { formatDate, getCategories, getPublishedPosts, slugifyCategory } from "../../utils/blog";
+
+export async function getStaticPaths() {
+  const posts = getPublishedPosts(await getCollection("blog"));
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post, categories: getCategories(posts) }
+  }));
+}
+
+const { post, categories } = Astro.props;
+const { Content } = await post.render();
+const categorySlug = slugifyCategory(post.data.category);
+---
+
+<BaseLayout title={`${post.data.title} | Hangwoo Cho`} description={post.data.description}>
+  <main class="page-frame article-grid">
+    <article class="article-card">
+      <a class="back-link" href="/blog/">Back to blog</a>
+
+      <div class="article-header">
+        <a class="post-card__category" href={`/blog/category/${categorySlug}/`}>
+          {post.data.category}
+        </a>
+        <h1>{post.data.title}</h1>
+        <p>{post.data.description}</p>
+        <div class="article-meta">
+          <time datetime={post.data.publishDate.toISOString()}>{formatDate(post.data.publishDate)}</time>
+          {
+            post.data.updatedDate && (
+              <span>Updated {formatDate(post.data.updatedDate)}</span>
+            )
+          }
+        </div>
+        <div class="tag-list">
+          {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+        </div>
+      </div>
+
+      <div class="article-body">
+        <Content />
+      </div>
+    </article>
+
+    <SidebarProfile categories={categories} />
+  </main>
+</BaseLayout>
