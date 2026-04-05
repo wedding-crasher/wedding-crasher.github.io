@@ -3,7 +3,7 @@ title: How I Think About Extreme Data Sparsity and Partial Distribution Shift in
 description: Lessons from a real CTR prediction project for a cold user segment, focusing on cross-domain signal recovery and training-distribution alignment.
 publishDate: 2026-04-05
 updatedDate: 2026-04-05
-category: Machine Learning Engineer
+category: Machine Learning
 tags:
   - CTR prediction
   - recommendation systems
