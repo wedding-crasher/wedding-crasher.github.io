@@ -8,42 +8,42 @@ const posts = getPublishedPosts(await getCollection("blog"));
 const categories = getCategories(posts);
 ---
 
-<BaseLayout title="About | Hangwoo Cho" description="개발 블로그 운영 목적과 개인 프로필을 소개하는 페이지">
+<BaseLayout title="About | Hangwoo Cho" description="A profile page describing the purpose of the blog and the themes behind the writing.">
   <main class="page-frame article-grid">
     <section class="article-card about-card">
       <p class="sidebar-label">Profile</p>
-      <h1>프로젝트 경험이 남는 개발 블로그를 만들고 있습니다</h1>
+      <h1>I am building a blog that keeps the engineering context intact</h1>
       <p>
-        이 사이트의 중심은 블로그입니다. 회사에서 ML과 LLM 시스템을 운영하며 겪은 장애, 병목,
-        설계 변경, 배포 전략, 팀 커뮤니케이션을 글로 남기고, 그 맥락이 개인 프로필로 이어지도록
-        구성했습니다.
+        The center of this site is the blog. I use it to document incidents, bottlenecks, design
+        changes, release strategy, and team-level decision making from real ML and LLM systems,
+        while letting that body of work speak for the profile around it.
       </p>
 
       <div class="about-grid">
         <section>
-          <h2>이 블로그에서 다루는 것</h2>
+          <h2>What this blog covers</h2>
           <ul>
-            <li>Machine Learning Engineer 관점의 모델 품질과 실험 관리</li>
-            <li>LLM Engineer 관점의 프롬프트, 평가, RAG, 비용 문제</li>
-            <li>MLOps 관점의 배포, 모니터링, 재현성, 운영 자동화</li>
+            <li>Model quality, experimentation, and delivery from a Machine Learning Engineer perspective</li>
+            <li>Prompting, evaluation, RAG, and cost trade-offs from an LLM Engineer perspective</li>
+            <li>Deployment, monitoring, reproducibility, and operating workflows from an MLOps perspective</li>
           </ul>
         </section>
 
         <section>
-          <h2>어떻게 읽히길 원하는가</h2>
+          <h2>How I want the writing to read</h2>
           <ul>
-            <li>잘된 결과보다 문제의 형태와 해결 이유가 먼저 보이게</li>
-            <li>짧은 팁보다 실제 프로젝트에서 통했던 판단 기준이 남게</li>
-            <li>포트폴리오가 아니라 엔지니어링 로그처럼 쌓이게</li>
+            <li>The shape of the problem should appear before the polished result</li>
+            <li>The decision criteria should outlast the one-off tip</li>
+            <li>The archive should feel like an engineering log, not a static portfolio</li>
           </ul>
         </section>
       </div>
 
       <section class="timeline-card">
         <h2>Quick bio slots</h2>
-        <p>아래 영역은 실제 약력으로 교체하기 쉽도록 자리만 잡아두었습니다.</p>
+        <p>This section is intentionally lightweight so it can be swapped out with a real bio later.</p>
         <ul>
-          <li>Current role: 회사명, 팀, 맡고 있는 플랫폼 또는 제품</li>
+          <li>Current role: company, team, and the product or platform you work on</li>
           <li>Interests: LLM systems, search, evaluation, MLOps</li>
           <li>Contact: GitHub, LinkedIn, email</li>
         </ul>

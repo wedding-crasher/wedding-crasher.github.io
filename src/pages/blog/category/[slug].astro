@@ -23,14 +23,14 @@ const { category, categories, posts } = Astro.props;
 
 <BaseLayout
   title={`${category.label} | Hangwoo Cho`}
-  description={`${category.label} 관련 글을 모아둔 카테고리 페이지`}
+  description={`A category archive for ${category.label} posts.`}
 >
   <BlogArchive
     posts={posts}
     categories={categories}
     eyebrow="Category"
-    pageTitle={`${category.label} 카테고리`}
-    pageDescription={`${category.label} 트랙에서 겪은 문제와 시행착오를 카테고리 단위로 모았습니다.`}
+    pageTitle={`${category.label} archive`}
+    pageDescription={`Posts grouped under ${category.label}, focused on the problems, trade-offs, and lessons from that track.`}
     currentCategorySlug={category.slug}
   />
 </BaseLayout>

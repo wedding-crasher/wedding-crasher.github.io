@@ -38,7 +38,7 @@ export function getCategories(posts: BlogEntry[]) {
 }
 
 export function formatDate(value: Date) {
-  return new Intl.DateTimeFormat("ko-KR", {
+  return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric"

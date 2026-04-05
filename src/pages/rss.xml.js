@@ -7,7 +7,7 @@ export async function GET(context) {
 
   return rss({
     title: "Hangwoo Cho | Engineering Notes",
-    description: "회사에서 진행한 ML과 LLM 프로젝트 경험을 기록하는 개발 블로그",
+    description: "An engineering blog documenting real ML, LLM, and MLOps work in production.",
     site: context.site,
     items: posts.map((post) => ({
       title: post.data.title,
