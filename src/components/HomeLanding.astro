@@ -1,0 +1,143 @@
+---
+import type { BlogEntry } from "../utils/blog";
+import { formatDate } from "../utils/blog";
+import PostCard from "./PostCard.astro";
+
+interface CategoryLink {
+  label: string;
+  slug: string;
+  count: number;
+}
+
+interface Props {
+  posts: BlogEntry[];
+  categories: CategoryLink[];
+  featuredPost?: BlogEntry;
+}
+
+const { posts, categories, featuredPost } = Astro.props;
+const leadPost = featuredPost ?? posts[0];
+const remainingPosts = leadPost ? posts.filter((post) => post.slug !== leadPost.slug) : posts;
+const selectedPosts = remainingPosts.length > 0 ? remainingPosts.slice(0, 3) : posts.slice(0, 1);
+const latestDate = posts[0] ? formatDate(posts[0].data.publishDate) : "No posts yet";
+---
+
+<main class="page-frame home-shell">
+  <section class="hero-split">
+    <section class="home-hero surface-card">
+      <p class="home-kicker">Home</p>
+      <h1>문제와 판단이 남는 개발 블로그</h1>
+      <p class="home-hero__lede">
+        회사에서 ML, LLM, MLOps 시스템을 실제로 굴리며 부딪힌 문제를 씁니다. 제품 소개보다
+        병목, 실패, 설계 변경, 운영 판단이 먼저 보이도록 기록합니다.
+      </p>
+
+      <div class="home-actions">
+        <a class="button-link" href="/blog/">Read the archive</a>
+        <a class="button-link button-link--ghost" href="/about/">Profile and background</a>
+      </div>
+    </section>
+
+    <aside class="home-dossier surface-card">
+      <p class="sidebar-label">Current lens</p>
+      <h2>Engineering notes from applied AI work</h2>
+      <p>
+        블로그의 역할은 포트폴리오 장식이 아니라, 실제 프로젝트에서 무엇을 보고 어떻게 판단했는지
+        남기는 기록장입니다.
+      </p>
+
+      <dl class="dossier-grid">
+        <div>
+          <dt>Focus</dt>
+          <dd>ML systems, LLM products, MLOps</dd>
+        </div>
+        <div>
+          <dt>Based in</dt>
+          <dd>Seoul</dd>
+        </div>
+        <div>
+          <dt>Latest update</dt>
+          <dd>{latestDate}</dd>
+        </div>
+        <div>
+          <dt>Intent</dt>
+          <dd>Explain trade-offs, not just outcomes</dd>
+        </div>
+      </dl>
+    </aside>
+  </section>
+
+  <section class="home-ribbon surface-card">
+    <div class="signal-card">
+      <span>Archive</span>
+      <strong>{posts.length}</strong>
+      <p>실제 경험을 바탕으로 쌓이는 글</p>
+    </div>
+    <div class="signal-card">
+      <span>Tracks</span>
+      <strong>{categories.length}</strong>
+      <p>역할 기준으로 분리한 탐색 구조</p>
+    </div>
+    <div class="signal-card">
+      <span>Style</span>
+      <strong>Field notes</strong>
+      <p>잘한 일보다 부딪힌 문제를 먼저 설명</p>
+    </div>
+  </section>
+
+  <section class="home-editorial">
+    {
+      leadPost && (
+        <a class="home-feature surface-card" href={`/blog/${leadPost.slug}/`}>
+          <div class="home-feature__meta">
+            <span>Latest dispatch</span>
+            <time datetime={leadPost.data.publishDate.toISOString()}>
+              {formatDate(leadPost.data.publishDate)}
+            </time>
+          </div>
+          <h2>{leadPost.data.title}</h2>
+          <p>{leadPost.data.description}</p>
+          <div class="home-feature__footer">
+            <span class="post-card__category">{leadPost.data.category}</span>
+            <span class="post-card__cta">Open essay</span>
+          </div>
+        </a>
+      )
+    }
+
+    <section class="home-manifesto surface-card">
+      <p class="sidebar-label">Why this exists</p>
+      <h2>Home은 큐레이션, Blog는 전체 아카이브</h2>
+      <ul class="manifesto-list">
+        <li>Home에서는 최근 글과 블로그의 관점을 빠르게 파악할 수 있습니다.</li>
+        <li>Blog에서는 카테고리별로 전체 글을 훑고 필요한 글로 바로 들어갈 수 있습니다.</li>
+        <li>About은 약력과 관심사를 정리하는 프로필 보조 페이지로 남겨둡니다.</li>
+      </ul>
+
+      <div class="home-track-list">
+        {
+          categories.map((category) => (
+            <a class="track-pill" href={`/blog/category/${category.slug}/`}>
+              <span>{category.label}</span>
+              <strong>{category.count}</strong>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </section>
+
+  <section class="home-writing">
+    <div class="home-writing__header">
+      <div>
+        <p class="sidebar-label">Selected writing</p>
+        <h2>최근 글과 핵심 글</h2>
+      </div>
+      <a class="text-link" href="/blog/">View full archive</a>
+    </div>
+
+    <div class="home-writing-grid">
+      {selectedPosts.map((post) => <PostCard post={post} variant="grid" />)}
+    </div>
+  </section>
+</main>

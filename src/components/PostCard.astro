@@ -4,13 +4,14 @@ import { formatDate, slugifyCategory } from "../utils/blog";
 
 interface Props {
   post: BlogEntry;
+  variant?: "grid" | "archive";
 }
 
-const { post } = Astro.props;
+const { post, variant = "grid" } = Astro.props;
 const categorySlug = slugifyCategory(post.data.category);
 ---
 
-<article class="post-card">
+<article class:list={["post-card", variant === "archive" ? "post-card--archive" : "post-card--grid"]}>
   <div class="post-card__meta-row">
     <a class="post-card__category" href={`/blog/category/${categorySlug}/`}>
       {post.data.category}
@@ -24,7 +25,10 @@ const categorySlug = slugifyCategory(post.data.category);
 
   <p>{post.data.description}</p>
 
-  <div class="tag-list">
-    {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+  <div class="post-card__footer">
+    <div class="tag-list">
+      {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+    </div>
+    <span class="post-card__cta">{variant === "archive" ? "Open note" : "Read note"}</span>
   </div>
 </article>

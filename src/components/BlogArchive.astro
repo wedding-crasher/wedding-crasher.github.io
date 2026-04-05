@@ -1,0 +1,87 @@
+---
+import type { BlogEntry } from "../utils/blog";
+import PostCard from "./PostCard.astro";
+
+interface CategoryLink {
+  label: string;
+  slug: string;
+  count: number;
+}
+
+interface Props {
+  posts: BlogEntry[];
+  categories: CategoryLink[];
+  pageTitle: string;
+  pageDescription: string;
+  eyebrow?: string;
+  currentCategorySlug?: string;
+}
+
+const {
+  posts,
+  categories,
+  pageTitle,
+  pageDescription,
+  eyebrow = "Blog archive",
+  currentCategorySlug
+} = Astro.props;
+---
+
+<main class="page-frame archive-shell">
+  <section class="archive-hero surface-card">
+    <div class="archive-intro">
+      <p class="home-kicker">{eyebrow}</p>
+      <h1>{pageTitle}</h1>
+      <p>{pageDescription}</p>
+    </div>
+
+    <div class="archive-stats">
+      <div class="archive-stat">
+        <span>Posts</span>
+        <strong>{posts.length}</strong>
+      </div>
+      <div class="archive-stat">
+        <span>Categories</span>
+        <strong>{categories.length}</strong>
+      </div>
+      <a class="archive-stat archive-stat--link" href="/rss.xml">
+        <span>Feed</span>
+        <strong>RSS</strong>
+      </a>
+    </div>
+  </section>
+
+  <section class="archive-toolbar surface-card">
+    <a class:list={["filter-chip", !currentCategorySlug && "filter-chip--active"]} href="/blog/">
+      All posts
+    </a>
+    {
+      categories.map((category) => (
+        <a
+          class:list={[
+            "filter-chip",
+            currentCategorySlug === category.slug && "filter-chip--active"
+          ]}
+          href={`/blog/category/${category.slug}/`}
+        >
+          {category.label}
+          <strong>{category.count}</strong>
+        </a>
+      ))
+    }
+  </section>
+
+  {
+    posts.length > 0 ? (
+      <section class="archive-list">
+        {posts.map((post) => <PostCard post={post} variant="archive" />)}
+      </section>
+    ) : (
+      <section class="archive-empty surface-card">
+        <p class="sidebar-label">No posts yet</p>
+        <h2>아직 공개된 글이 없습니다</h2>
+        <p>초안이 준비되면 이 아카이브부터 차곡차곡 채워집니다.</p>
+      </section>
+    )
+  }
+</main>

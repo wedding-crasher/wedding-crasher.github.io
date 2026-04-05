@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import BlogHome from "../../../components/BlogHome.astro";
+import BlogArchive from "../../../components/BlogArchive.astro";
 import { getCategories, getPublishedPosts, slugifyCategory } from "../../../utils/blog";
 
 export async function getStaticPaths() {
@@ -19,19 +19,18 @@ export async function getStaticPaths() {
 }
 
 const { category, categories, posts } = Astro.props;
-const featuredPost = posts[0];
 ---
 
 <BaseLayout
   title={`${category.label} | Hangwoo Cho`}
   description={`${category.label} 관련 글을 모아둔 카테고리 페이지`}
 >
-  <BlogHome
+  <BlogArchive
     posts={posts}
     categories={categories}
-    featuredPost={featuredPost}
-    eyebrow="Category archive"
+    eyebrow="Category"
     pageTitle={`${category.label} 카테고리`}
     pageDescription={`${category.label} 트랙에서 겪은 문제와 시행착오를 카테고리 단위로 모았습니다.`}
+    currentCategorySlug={category.slug}
   />
 </BaseLayout>
