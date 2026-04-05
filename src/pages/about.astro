@@ -8,45 +8,44 @@ const posts = getPublishedPosts(await getCollection("blog"));
 const categories = getCategories(posts);
 ---
 
-<BaseLayout title="About | Hangwoo Cho" description="A profile page describing my role on Microsoft's AI Build Team in Korea and the enterprise AI themes behind this blog.">
+<BaseLayout title="About | Hangwoo Cho" description="A short profile page about my AI / ML engineering work and the lessons I share on this blog.">
   <main class="page-frame article-grid">
     <section class="article-card about-card">
       <p class="sidebar-label">Profile</p>
-      <h1>I work on enterprise AI and ML problems as a Solution Engineer</h1>
+      <h1>I use this blog to share lessons learned from AI / ML engineering work</h1>
       <p>
-        I am a Solution Engineer on Microsoft's AI Build Team in Korea. My work centers on helping
-        organizations solve enterprise business problems with AI and ML, and this blog is where I
-        document the technical decisions, delivery trade-offs, and operating realities behind that work.
+        I work on AI / ML engineering problems and use this site to write down what I learn from
+        building, shipping, and operating those systems in practice.
       </p>
 
       <div class="about-grid">
         <section>
           <h2>What this blog covers</h2>
           <ul>
-            <li>Enterprise use cases where AI and ML have to align with real business constraints</li>
-            <li>LLM system design, evaluation, retrieval, and adoption patterns in production settings</li>
-            <li>Delivery trade-offs across architecture, deployment, monitoring, and stakeholder communication</li>
+            <li>AI / ML engineering problems that show up in real projects</li>
+            <li>LLM systems, evaluation, retrieval, and production trade-offs</li>
+            <li>Deployment, monitoring, and operational lessons from shipping systems</li>
           </ul>
         </section>
 
         <section>
           <h2>How I want the writing to read</h2>
           <ul>
-            <li>The business problem and the engineering constraint should be clear from the start</li>
-            <li>The decision criteria should matter as much as the technical implementation</li>
-            <li>The archive should read like field notes from real enterprise AI work</li>
+            <li>The problem should be clear before the solution is polished</li>
+            <li>The trade-off should matter as much as the implementation</li>
+            <li>The archive should feel like practical lessons learned, not marketing copy</li>
           </ul>
         </section>
       </div>
 
       <section class="timeline-card">
         <h2>Current profile</h2>
-        <p>A concise summary of the context behind the writing on this site.</p>
+        <p>A short summary of the context behind the writing on this site.</p>
         <ul>
           <li>Role: Solution Engineer</li>
           <li>Team: Microsoft AI Build Team</li>
           <li>Location: Korea</li>
-          <li>Focus: solving enterprise business problems with AI and ML</li>
+          <li>Focus: AI / ML engineering and lessons learned from practice</li>
         </ul>
       </section>
     </section>
