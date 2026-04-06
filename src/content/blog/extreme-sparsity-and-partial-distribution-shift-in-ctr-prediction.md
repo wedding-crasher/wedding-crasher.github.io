@@ -159,68 +159,122 @@ In our case, this part was ultimately handled later through a calibration step f
 
 ## Problem 2: Partial distribution shift
 
-The second problem was not just that training and inference were misaligned in a generic sense. It was a more awkward case than that.
+This was not just a generic case of training and inference being misaligned.
 
-The model was trained on the full population, but the first deployment target was the low-activity segment. Later, the same model might still need to expand back to the broader population. So the problem was not simply "train on population A, serve population B". It was "train on the broad population, serve a narrower shifted subgroup now, but do not completely break the option of serving the broad population later".
+The awkward part was this:
 
-That is why I think **partial distribution shift** is the right description. The serving group was not fully out-of-distribution, but it was different enough that the mismatch mattered. And unlike a clean benchmark setup, the product requirement itself was split: optimize for the shifted subgroup immediately, but preserve some path back to a more general model later.
+- the model was trained on the full population,
+- the first deployment target was the low-activity segment,
+- and the same model might still need to expand back to the broader population later.
+
+So the problem was not simply "train on population A, serve population B".
+
+It was closer to this:
+
+> train on the broad population, serve a narrower shifted subgroup now, but do not completely give up the option of serving the broader population later.
+
+That is why I think **partial distribution shift** is the right description. The serving group was not fully out-of-distribution, but it was different enough that the mismatch mattered.
 
 ### Why this was a particularly awkward kind of shift
 
-What made this more than a textbook covariate-shift story was the interaction between three constraints:
+What made this more than a textbook covariate-shift story was the interaction between three constraints.
 
 - the serving segment was narrower than the full population,
 - that segment was also the one with weaker behavioral signal,
 - and the production path still cared about eventual reuse outside that segment.
 
-So the problem was not just statistical misalignment. It was also a product-design and deployment problem.
+So the problem was not just statistical misalignment. It was also a product and deployment problem.
 
-If the low-activity segment had been the only target forever, the answer would have been easier: just optimize for that subgroup and move on. If the full population had been the immediate serving target, then training on the full population would have been less questionable. The difficulty came from living in between those two situations.
+If the low-activity segment had been the only target forever, the answer would have been easier: just optimize for that subgroup and move on.
+
+If the full population had been the immediate serving target, then training on the full population would have been much less questionable.
+
+The difficulty came from living in between those two situations.
 
 That is the part I think is worth making explicit. The shift was only "partial" in distributional terms, but operationally it created a very real design tension.
 
 ### The answer felt obvious, and that was part of the point
 
-In hindsight, the core response sounds almost embarrassingly obvious:
+In hindsight, the core response sounds almost embarrassingly obvious.
 
 > if the users you are about to serve do not look like the users you trained on, move the training distribution closer to the serving distribution.
 
 That is not a novel modeling insight. I was aware of that while writing this section, and I think it is better to say that directly than to pretend it was some surprising technical breakthrough.
 
-But obvious does not mean unimportant. In projects like this, the mistake is often not misunderstanding the principle. The mistake is failing to operationalize it early enough.
+But obvious does not mean unimportant.
 
-In practice, this meant treating training-set construction as part of the modeling problem. The same cross-domain variables that helped recover signal for sparse users also helped define a training cohort that looked more like the low-activity users we actually cared about. Demographic variables, device signals, customer attributes, and partial behavior from adjacent surfaces were useful not only as features, but also as a way to pull the learning distribution closer to the serving distribution.
+In projects like this, the mistake is often not misunderstanding the principle. The mistake is failing to operationalize it early enough.
 
-That sounds simple on paper. It still mattered because it changed where effort went. Instead of treating the full-population dataset as the unquestioned default, it forced the question: "who should this model really be allowed to learn from if its first job is to serve this subgroup?"
+In practice, this meant treating training-set construction as part of the modeling problem.
+
+The same cross-domain variables that helped recover signal for sparse users also helped define a training cohort that looked more like the low-activity users we actually cared about.
+
+The useful signals included things like:
+
+- demographic variables,
+- device signals,
+- customer attributes,
+- and partial behavior from adjacent surfaces.
+
+They mattered not only as features, but also as a way to pull the learning distribution closer to the serving distribution.
+
+That sounds simple on paper. It still mattered because it changed where effort went.
+
+Instead of treating the full-population dataset as the unquestioned default, it forced a more specific question:
+
+> who should this model really be allowed to learn from if its first job is to serve this subgroup?
 
 ### The trade-off we accepted
 
 Once the objective was framed that way, the trade-off became unavoidable.
 
-If we biased the model toward the low-activity segment, there was a real possibility that aggregate performance over the full population would worsen. I do not think that should be described as a bug. It was the cost of optimizing for the segment that actually mattered in the first deployment.
+If we biased the model toward the low-activity segment, there was a real possibility that aggregate performance over the full population would worsen.
 
-This was the part that felt more honest to me than elegant. There was no magical way to make the subgroup-specific objective disappear. We simply accepted that improving relevance for the target segment might come at the expense of a cleaner global metric.
+I do not think that should be described as a bug. It was the cost of optimizing for the segment that actually mattered in the first deployment.
 
-That acceptance also clarified the longer-term design space. If subgroup needs remain materially different, the better answer is often not to keep pretending everything belongs in one shared model. The cleaner long-run option may be some combination of:
+This was the part that felt more honest to me than elegant.
+
+There was no magical way to make the subgroup-specific objective disappear. We simply accepted that improving relevance for the target segment might come at the expense of a cleaner global metric.
+
+That acceptance also clarified the longer-term design space. If subgroup needs remain materially different, the better answer is often not to keep pretending everything belongs in one shared model.
+
+The cleaner long-run option may be some combination of:
 
 - explicit segment-specific models,
 - routing logic across models,
 - or at least a shared model whose training distribution is deliberately biased toward the segment that matters most.
 
-So I do not think the main lesson here was a clever solution. It was recognizing that the problem itself had already constrained the answer. The response was somewhat obvious, and we knew that. What mattered was being explicit about the trade-off and being willing to accept it.
+So I do not think the main lesson here was a clever solution.
+
+It was recognizing that the problem itself had already constrained the answer. The response was somewhat obvious, and we knew that. What mattered was being explicit about the trade-off and being willing to accept it.
 
 ## Final takeaway
 
-If there is one broader lesson I took away from this project, it is that real production datasets are much less well-behaved than the datasets that appear in data science competitions or research benchmarks.
+If there is one broader lesson I took away from this project, it is this:
 
-On paper, this project can be summarized cleanly: we had a sparse user segment, we had a distribution mismatch between training and serving, and we responded by recovering signal from adjacent behaviors and moving the training distribution closer to the segment we actually needed to serve. That is the modeling story, and it is worth writing down because it clarifies what the real problems were and how we chose to address them.
+real production datasets are much less well-behaved than the datasets that appear in data science competitions or research benchmarks.
+
+The modeling story in this project was still worth writing down. At a high level, it came down to three things:
+
+- identifying what kind of sparsity we were actually dealing with,
+- being precise about what kind of distribution shift this was,
+- and choosing to accept the trade-off that came with optimizing for the segment that mattered most.
 
 But honestly, modeling was not the most painful part.
 
-The harder part was processing large volumes of data under limited compute. The actual workload ran on Spark, and I hit out-of-memory errors more times than I can count while trying to make the pipeline stable and efficient enough to support the work. That engineering struggle ended up being at least as educational as the model-design questions themselves, and probably more painful in practice.
+The harder part was large-scale data processing under limited compute.
 
-I think that part deserves its own write-up later: what the Spark pipeline looked like, why OOM kept happening, what we changed, and how we gradually made large-scale processing more manageable under tight resource constraints.
+This work ran on Spark, and I hit out-of-memory errors more times than I can count while trying to make the pipeline stable enough to support the modeling work at all. In practice, that engineering struggle felt at least as educational as the model-design questions, and often more painful.
 
-So this post is really the first half of the story. It is the part about identifying the statistical and product-side problems clearly: what kind of sparsity we were dealing with, what kind of distribution shift it really was, and what trade-offs we knowingly accepted. The systems side of the story, especially the compute and data-processing battle, is still worth telling separately.
+That part probably deserves its own write-up later.
 
-Finally, I want to thank my mentor, Juwen Wu, and the teammates I cannot name publicly for helping think through the problem and for working through the messy parts of the project together.
+If I write that follow-up, I would want it to cover:
+
+- what the Spark pipeline looked like,
+- why OOM kept happening,
+- what we changed,
+- and how we gradually made large-scale processing more manageable under tight resource constraints.
+
+So this post is really only the first half of the story. It is the part about defining the problem correctly and documenting how we approached it.
+
+Finally, I want to thank my mentor, Juwen Wu, and the teammates I cannot name publicly for helping think through the problem and work through the messy parts of the project together.
