@@ -97,6 +97,8 @@ Empirically, this was the highest-impact intervention. Before tuning the model h
 
 ### Solution 2. Compress sparse identifiers with better representations
 
+> Better representations can make sparse identifiers more useful, but in a tree-based production path they are often a secondary lever rather than the main one.
+
 The next set of ideas from those discussions was about representation. This was one of the directions I found conceptually appealing, but in this particular project it did not translate into as much practical lift as I initially expected.
 
 I cannot disclose the full model stack in detail, but the production baseline was closer to a distributed LightGBM-style tree system than to a deep representation learner. In that setup, many high-cardinality signals were already entering the model as categorical features, so the marginal benefit of adding another representation layer was naturally more limited.
@@ -120,7 +122,7 @@ So I still think this was the right direction to consider, but in this case it f
 
 ### Solution 3. Use a small sequence model as a feature engineering tool
 
-> **Note**: this was a reasonable idea discussed with mentor, but under a tight compute budget and a tree-based production path, it looked like a lower-ROI option.
+> Sequence models can preserve behavioral structure, but under tight compute and a tree-based production path they made more sense as a feature tool than as the main modeling direction.
 
 Another strong recommendation was to stop collapsing all behavioral logs into overly simple aggregates too early.
 
@@ -141,7 +143,7 @@ I still think this is a realistic recommendation. It treats sequence modeling as
 
 ### Solution 4. Use oversampling carefully, and calibrate afterward
 
-> **Note:** this was a fairly standard approach. I included it because it addresses the intrinsic positive sparsity of CTR labels, even though it is not really a feature-side intervention.
+> Oversampling can make sparse-label training easier, but if the output still needs probability semantics, calibration becomes part of the solution.
 
 The discussion also touched on **oversampling positive examples** or using bootstrap-style sampling when positives are too rare.
 
