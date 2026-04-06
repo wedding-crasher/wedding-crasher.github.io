@@ -54,8 +54,10 @@ What made this difficult was not the definition of the task, but the characteris
 
 That pushed the discussion toward two concrete questions:
 
-1. How do we build a reliable CTR model when the target segment has **extremely sparse in-domain behavioral signals**?
-2. How do we train robustly when the training population is broad but **the deployment population is a narrower subgroup with a shifted feature distribution**?
+> How do we build a reliable CTR model when the target segment has **extremely sparse in-domain behavioral signals**?
+>
+> How do we train robustly when the training population is broad but **the deployment population is a narrower subgroup with a shifted feature distribution**?
+
 
 ## Problem 1: Extreme data sparsity
 
