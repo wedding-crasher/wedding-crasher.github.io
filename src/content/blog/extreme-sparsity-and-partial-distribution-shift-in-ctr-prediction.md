@@ -209,37 +209,18 @@ That acceptance also clarified the longer-term design space. If subgroup needs r
 
 So I do not think the main lesson here was a clever solution. It was recognizing that the problem itself had already constrained the answer. The response was somewhat obvious, and we knew that. What mattered was being explicit about the trade-off and being willing to accept it.
 
-## What the meeting changed in my prioritization
-
-After revisiting the problem, I do not think the main takeaway was *use a more sophisticated model class*.
-
-The more important takeaway was a prioritization rule:
-
-**spend more effort on data and feature design than on hyperparameter tuning at the beginning.**
-
-That matched the actual state of the project well:
-
-- the data was already fairly rich,
-- the problem was not a lack of columns but a lack of useful signal for the right subgroup,
-- and the highest-leverage work was signal recovery and distribution alignment.
-
-If I translate that into a practical order of work, it becomes:
-
-1. Search for cross-domain signals before assuming the user is truly unobservable.
-2. Use those signals both as model inputs and as a way to move the training distribution closer to the low-activity segment.
-3. Improve representation for sparse identifiers with embeddings, using hashing only as a simpler baseline.
-4. Add a lightweight sequence encoder as a feature generator instead of immediately replacing the whole stack.
-5. Experiment with oversampling only together with a clear calibration story.
-6. Tune the final learner after the data and feature side is in better shape.
-
 ## Final takeaway
 
-What mattered most in this case was staying grounded in the structure of the data.
+If there is one broader lesson I took away from this project, it is that real production datasets are much less well-behaved than the datasets that appear in data science competitions or research benchmarks.
 
-For sparse CTR problems, the first answer is not always a more complex model. Sometimes the first answer is to **recover signal from adjacent behaviors outside the exact target surface**.
+On paper, this project can be summarized cleanly: we had a sparse user segment, we had a distribution mismatch between training and serving, and we responded by recovering signal from adjacent behaviors and moving the training distribution closer to the segment we actually needed to serve. That is the modeling story, and it is worth writing down because it clarifies what the real problems were and how we chose to address them.
 
-And for partial distribution shift, the answer is not to assume the full population is always the correct reference distribution. In this case, the answer was to **move the training distribution toward the subgroup the system actually needed to serve, while accepting the trade-off that this might hurt broader population performance**.
+But honestly, modeling was not the most painful part.
 
-That combination, cross-domain signal recovery plus training-distribution alignment, was the real center of gravity of the project.
+The harder part was processing large volumes of data under limited compute. The actual workload ran on Spark, and I hit out-of-memory errors more times than I can count while trying to make the pipeline stable and efficient enough to support the work. That engineering struggle ended up being at least as educational as the model-design questions themselves, and probably more painful in practice.
 
-Everything else, including embeddings, sequence features, and calibration, becomes much more effective once those two principles are clear.
+I think that part deserves its own write-up later: what the Spark pipeline looked like, why OOM kept happening, what we changed, and how we gradually made large-scale processing more manageable under tight resource constraints.
+
+So this post is really the first half of the story. It is the part about identifying the statistical and product-side problems clearly: what kind of sparsity we were dealing with, what kind of distribution shift it really was, and what trade-offs we knowingly accepted. The systems side of the story, especially the compute and data-processing battle, is still worth telling separately.
+
+Finally, I want to thank my mentor, Juwen Wu, and the teammates I cannot name publicly for helping think through the problem and for working through the messy parts of the project together.
