@@ -1,55 +1,42 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import SidebarProfile from "../components/SidebarProfile.astro";
-import { getCategories, getPublishedPosts } from "../utils/blog";
-
-const posts = getPublishedPosts(await getCollection("blog"));
-const categories = getCategories(posts);
 ---
 
-<BaseLayout title="About | Hangwoo Cho" description="A short profile page about my AI / ML engineering work and the lessons I share on this blog.">
-  <main class="page-frame article-grid">
-    <section class="article-card about-card">
-      <p class="sidebar-label">Profile</p>
-      <h1>I use this blog to share lessons learned from AI / ML engineering</h1>
-      <p>
-        This site is a place to write down what I learn from building, shipping, and operating
-        AI / ML systems in practice.
-      </p>
+<BaseLayout title="About | Hangwoo Cho" description="A short profile for Hangwoo Cho.">
+  <main class="simple-page">
+    <section class="page-frame article-card about-simple">
+      <div class="about-simple__hero">
+        <img class="about-simple__photo" src="/images/profile.jpg" alt="Portrait of Hangwoo Cho" />
 
-      <div class="about-grid">
-        <section>
-          <h2>What this blog covers</h2>
-          <ul>
-            <li>AI / ML engineering problems that show up in real projects</li>
-            <li>LLM systems, evaluation, retrieval, and production trade-offs</li>
-            <li>Deployment, monitoring, and operational lessons from shipping systems</li>
-          </ul>
-        </section>
+        <div class="about-simple__body">
+          <p class="sidebar-label">About</p>
+          <h1>Hangwoo Cho</h1>
+          <p class="about-simple__bio">Software Solution Engineer focused on practical AI / ML systems.</p>
 
-        <section>
-          <h2>How I want the writing to read</h2>
-          <ul>
-            <li>The problem should be clear before the solution is polished</li>
-            <li>The trade-off should matter as much as the implementation</li>
-            <li>The archive should feel like practical lessons learned, not marketing copy</li>
-          </ul>
-        </section>
+          <dl class="about-simple__meta">
+            <div>
+              <dt>GitHub</dt>
+              <dd>
+                <a href="https://github.com/wedding-crasher" target="_blank" rel="noreferrer">@wedding-crasher</a>
+              </dd>
+            </div>
+            <div>
+              <dt>LinkedIn</dt>
+              <dd>
+                <a href="https://www.linkedin.com/in/hangwoo-cho-01257a252" target="_blank" rel="noreferrer">hangwoo-cho-01257a252</a>
+              </dd>
+            </div>
+          </dl>
+        </div>
       </div>
 
-      <section class="timeline-card">
-        <h2>Current profile</h2>
-        <p>A short summary of the context behind the writing on this site.</p>
-        <ul>
-          <li>Role: Solution Engineer</li>
-          <li>Team: Microsoft AI Build Team</li>
-          <li>Location: Korea</li>
-          <li>Focus: AI / ML engineering and lessons learned from practice</li>
+      <section class="about-simple__section">
+        <h2>Education</h2>
+        <ul class="about-simple__list">
+          <li>B.E. in Convergence Software, Sungkyunkwan University</li>
+          <li>B.B.A. in Global Business, Sungkyunkwan University</li>
         </ul>
       </section>
     </section>
-
-    <SidebarProfile categories={categories} />
   </main>
 </BaseLayout>
