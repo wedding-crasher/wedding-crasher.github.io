@@ -784,6 +784,11 @@ img {
   color: var(--muted);
 }
 
+.about-simple__list strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
 .about-simple__list li + li {
   margin-top: 0.55rem;
 }

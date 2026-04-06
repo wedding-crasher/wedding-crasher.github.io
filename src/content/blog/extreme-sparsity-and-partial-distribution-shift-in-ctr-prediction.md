@@ -1,8 +1,8 @@
 ---
-title: Handling Real-World Extreme Data Sparsity and Partial Distribution Shift in CTR Prediction
-description: Lessons from a CTR prediction project for a low-activity user segment, focusing on cross-domain signal recovery and training-distribution alignment.
+title: Surviving Extreme Feature Sparsity and Distribution Shift in CTR Prediction
+description: Lessons from a CTR prediction project for a low-activity user segment operating under extreme feature sparsity and distribution shift.
 publishDate: 2026-04-05
-updatedDate: 2026-04-05
+updatedDate: 2026-04-07
 category: Machine Learning
 tags:
   - CTR prediction
@@ -16,9 +16,11 @@ draft: false
 
 Hi, I'm Hangwoo Cho. I work as a Solution Engineer in Microsoft's AI Build team, where I help customers deploy machine learning systems and solve practical ML problems in production.
 
+I recently had a chance to build a CTR prediction model on one of the largest large-scale data flows in Korea, and that setting shaped a lot of what this post is about.
+
 As part of Microsoft's mentoring program, I recently started writing down lessons learned from real machine learning problems I have encountered at work and from the technical discussions around them.
 
-This post is the first note in that series.
+This post is the first note in that series. It is, in a sense, a story about trying to make a CTR model survive inside that dataset rather than just look good on a clean benchmark.
 
 It focuses on two issues that surfaced very quickly in a CTR prediction project:
 
@@ -267,13 +269,6 @@ The harder part was large-scale data processing under limited compute.
 This work ran on Spark, and I hit out-of-memory errors more times than I can count while trying to make the pipeline stable enough to support the modeling work at all. In practice, that engineering struggle felt at least as educational as the model-design questions, and often more painful.
 
 That part probably deserves its own write-up later.
-
-If I write that follow-up, I would want it to cover:
-
-- what the Spark pipeline looked like,
-- why OOM kept happening,
-- what we changed,
-- and how we gradually made large-scale processing more manageable under tight resource constraints.
 
 So this post is really only the first half of the story. It is the part about defining the problem correctly and documenting how we approached it.
 
