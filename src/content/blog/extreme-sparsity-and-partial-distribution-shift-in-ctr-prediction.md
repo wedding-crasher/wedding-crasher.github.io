@@ -56,44 +56,50 @@ This was the real heart of the problem: the users who mattered most were exactly
 
 In practice, that split the modeling challenge into two concrete problems.
 
-Problem 1 was **extreme data sparsity**: the target users had too little in-domain behavioral history for the usual interaction features to be reliable.
+**Problem 1 - extreme data sparsity:** the target users had too little in-domain behavioral history for the usual interaction features to be reliable.
 
-Problem 2 was **partial distribution shift**: the users we needed to serve were not distributed like the broader population the model would normally be trained on.
+**Problem 2 - partial distribution shift:** the users we needed to serve were not distributed like the broader population the model would normally be trained on.
 
 
 ## Problem 1: Extreme data sparsity
+
+> **Problem 1 takeaway:** when in-domain history is too sparse, the most practical path is to recover signal from adjacent domains first, then make sparse identifiers and short behavior sequences more usable through better representations, and only use sampling with calibration in mind.
 
 For the low-activity segment, the most important feature family, user-content interaction history, was also the sparsest.
 
 This is a very common industrial ML pattern. The features that usually drive ranking quality are often the ones that disappear first in cold-start or inactive-user scenarios.
 
-The first direction I wanted to think through was **cross-domain feature discovery**. After revisiting the meeting notes, I think that really should be the first solution in this write-up as well.
+Up to that point, I had mostly approached feature engineering in a Kaggle-like way: work harder on the columns already in front of me. But this case forced a different order of thinking.
 
-### 1. Start by looking for cross-domain features
+The first move was **cross-domain feature discovery**: before trying to squeeze more out of weak target-domain logs, look for usable signal from adjacent domains. After that, the problem became how to make the remaining sparse inputs more usable through better representations such as hashing or embeddings, richer sequence-based features, and, if needed, sampling with calibration in mind.
+
+### Solution 1. Start by looking for cross-domain features
+
+> When the target surface is quiet, listen to the neighboring surfaces.
 
 If the target app or target content does not provide enough behavior, the next best move is to ask: **what other signals still reveal user preference or intent?**
 
-That was the most practical starting point for this problem.
+In a real-world setting, unlike many data science competition setups, you are sometimes able to go out and discover additional features. When that option exists, feature discovery often has the biggest impact.
 
-For low-activity users, direct target-app interaction might be weak or nearly missing, but that does not mean the user is completely unobservable. Other signals can still carry information:
+For low-activity users, direct target-app interaction might be weak or nearly missing, but that does not mean the user is completely unobservable. In this project, the more useful signals came from adjacent product surfaces and broader usage context. I cannot disclose the exact feature set, but examples of the patterns that mattered include:
 
-- demographic features such as age, gender, or geography,
-- device information,
-- preference or profile features,
-- usage patterns from other apps,
-- partial click or usage behavior outside the exact target domain.
+- coarse user profile and account-state signals,
+- device and platform usage patterns,
+- engagement signals from adjacent app surfaces,
+- behavioral traces from related content or campaign touchpoints,
+- and short-horizon activity features outside the exact target interaction.
 
-This matters because sparsity is rarely absolute. More often, it is **domain-specific sparsity**. The user may be sparse for the exact app or campaign we care about while still being reasonably observable through adjacent behaviors.
+This matters because the sparsity was not absolute. It was **target-domain sparsity**. The user could be nearly blank for the exact notification-click history we wanted to model while still being partially observable through nearby behaviors.
 
-That is why I think cross-domain features deserve to come first. Before reaching for a more sophisticated model, we should first widen the feature search space and recover signal from nearby domains.
+Empirically, this was the highest-impact intervention. Before tuning the model harder, the better move was to expand the observable feature space and recover signal from variables that were correlated with the target task but not limited to the exact serving surface.
 
-In other words, when target-domain history is weak, a good question is not just *how do I model sparse data better?* but also *where else is the hidden signal?*
+### Solution 2. Compress sparse identifiers with better representations
 
-### 2. Compress sparse identifiers with better representations
+The next set of ideas from those discussions was about representation. This was one of the directions I found conceptually appealing, but in this particular project it did not translate into as much practical lift as I initially expected.
 
-The next set of ideas from those discussions was about representation.
+I cannot disclose the full model stack in detail, but the production baseline was closer to a distributed LightGBM-style tree system than to a deep representation learner. In that setup, many high-cardinality signals were already entering the model as categorical features, so the marginal benefit of adding another representation layer was naturally more limited.
 
-One direct suggestion was **feature hashing** for very high-cardinality identifiers such as `user_id`, `app_id`, and `session_id`. Hashing can reduce feature dimensionality and make sparse tabular inputs more manageable.
+One direct suggestion was **feature hashing** for very high-cardinality identifiers tied to users, content, sessions, or other interaction entities. Hashing can reduce feature dimensionality and make sparse tabular inputs more manageable.
 
 But there is an important limitation. Hashing mostly compresses one dimension. It does not naturally capture similarity between related users or related items.
 
@@ -108,26 +114,32 @@ Instead of feeding raw identifiers directly into the main model, we can train co
 
 The point is not to over-engineer the system with a giant deep recommender stack. The point is to map sparse, high-cardinality inputs into a denser and more meaningful feature space.
 
-That was one of the clearest themes in the meeting: when sparsity hurts, better representation often matters more than blindly adding more raw columns.
+So I still think this was the right direction to consider, but in this case it felt more like a constrained improvement path than the main lever. Compared with cross-domain feature discovery, the gains here were more limited.
 
-### 3. Use a small sequence model as a feature engineering tool
+### Solution 3. Use a small sequence model as a feature engineering tool
+
+> **Note**: this was a reasonable idea discussed with mentor, but under a tight compute budget and a tree-based production path, it looked like a lower-ROI option.
 
 Another strong recommendation was to stop collapsing all behavioral logs into overly simple aggregates too early.
 
-At the time, the baseline system was using a tree model and summarized behavior into features like short-window counts or average CTR-like aggregates. That is operationally convenient, but it can throw away sequence structure.
+I thought this was a reasonable idea, and in a different setting I probably would have tried it. In this project, however, we did not end up pursuing it. The main reason was expected ROI.
 
-The suggestion was not to replace everything with a large end-to-end recommender model. Compute was limited, and the production baseline was still a tree model. Instead, the advice was more practical:
+At the time, the baseline system was still a tree model and summarized behavior into features like short-window counts or average CTR-like aggregates. That is operationally convenient, but it can throw away sequence structure. Still, adding a separate sequence encoder would have increased both data-preparation complexity and compute cost, and I did not think it would outperform the other, cheaper interventions we already had on the table.
+
+There was also a modeling mismatch. Sequence encoders are most attractive when the downstream model can directly exploit the representation they produce. In our case, the target production path was still tree-based, so the sequence model would have served only as an upstream feature generator rather than as a native part of the learner. That made the projected gain feel more limited.
+
+So the suggestion was not to replace everything with a large end-to-end recommender model. Instead, the advice was more practical:
 
 - build a **small sequence model**,
 - encode click history or app usage history with a sliding window,
 - optionally include signals such as usage path or time spent,
 - and feed the resulting representation back into the existing model as another feature group.
 
-I like this recommendation because it is realistic. It treats sequence modeling as a feature engineering layer rather than a full architectural rewrite.
+I still think this is a realistic recommendation. It treats sequence modeling as a feature engineering layer rather than a full architectural rewrite. But in this particular case, given the compute budget and the tree-model production path, I viewed it as a lower-ROI option than cross-domain feature discovery or simpler feature-side improvements.
 
-That is often the right move in production: extract richer structure from logs, then plug it into the system you already know how to operate.
+### Solution 4. Use oversampling carefully, and calibrate afterward
 
-### 4. Use oversampling carefully, and calibrate afterward
+> **Note:** this was a fairly standard approach. I included it because it addresses the intrinsic positive sparsity of CTR labels, even though it is not really a feature-side intervention.
 
 The discussion also touched on **oversampling positive examples** or using bootstrap-style sampling when positives are too rare.
 
@@ -143,6 +155,8 @@ The practical interpretation from the discussion was:
 
 This was a good reminder that there is a difference between **making the learner see enough positive examples** and **preserving the semantics of the final output**.
 
+In our case, this part was ultimately handled later through a calibration step fit on validation data rather than treated as the main lever for improving the model itself.
+
 ## Problem 2: Partial distribution shift
 
 The second problem was that training and inference were not aligned.
@@ -151,44 +165,44 @@ The model was trained on the full population, but the initial deployment target 
 
 That is why I described the issue as a kind of **partial distribution shift**. The inference group was not fully outside the training population, but its feature distribution clearly differed from the full population used for learning.
 
-### 1. Train on users who look like the users you will serve
+### Solution 1. Train on users who look like the users you will serve
 
-The most actionable advice from the meeting was very simple:
+The most actionable principle here was straightforward:
 
 > Do not blindly train on the full population if your immediate serving target is a narrower subgroup with a different profile.
 
-Instead, construct a training sample that looks as similar as possible to the low-activity segment.
+Instead, construct a training cohort whose feature distribution is as close as possible to the low-activity serving segment.
 
-One suggestion was to match or filter by signals such as:
+In practice, that means matching or filtering on variables such as:
 
 - demographic information,
 - device information,
 - customer attributes,
 - and partial behavior information, including activity from other apps when the exact target behavior is sparse.
 
-This connects directly back to the cross-domain feature idea. The same non-target-domain signals that help with sparsity can also help us define a more appropriate training population.
+This connects directly back to the cross-domain feature idea. The same non-target-domain signals that help reduce sparsity can also be used to define a better-aligned training population.
 
-That was an important realization for me. Cross-domain information is not only useful as a model input. It is also useful for **choosing who the model should learn from**.
+That is an important point in its own right. Cross-domain information is not only useful as model input; it is also useful for **training-set construction**.
 
-### 2. Accept the trade-off between subgroup performance and global performance
+### Solution 2. Accept the trade-off between subgroup performance and global performance
 
-One part of the conversation that felt very honest was the acknowledgement of trade-offs.
+Once the objective is defined at the subgroup level, the trade-off becomes unavoidable.
 
-If we optimize hard for low-activity users, overall performance on the full population may drop. That is not necessarily a modeling failure. It may simply reflect the fact that the business objective is segment-specific.
+If the model is optimized aggressively for low-activity users, aggregate performance over the full population may decline. That is not necessarily a modeling failure. It may simply reflect the fact that the optimization target is segment-specific rather than population-wide.
 
-In marketing systems, it is common to handle this by maintaining **persona-specific or segment-specific models**.
+In production marketing systems, a common response is to maintain **segment-specific models** or routing logic across multiple models.
 
-A longer-term design could therefore be:
+A longer-term design could therefore look like this:
 
 - create user personas or segments,
 - train separate models for each segment,
 - and ensemble or route between them when broader inference is needed.
 
-If that is too heavy operationally, a simpler intermediate step is to make subgroup-defining features more explicit in the model and bias training toward the target segment first.
+If that is too expensive operationally, a simpler intermediate step is to make subgroup-defining variables more explicit in the feature set and bias the training distribution toward the target segment.
 
 ## What the meeting changed in my prioritization
 
-After rereading both the sketch and the meeting summary, I do not think the main takeaway was *use a fancy new architecture*.
+After revisiting the problem, I do not think the main takeaway was *use a more sophisticated model class*.
 
 The more important takeaway was a prioritization rule:
 
@@ -198,9 +212,9 @@ That matched the actual state of the project well:
 
 - the data was already fairly rich,
 - the problem was not a lack of columns but a lack of useful signal for the right subgroup,
-- and the highest-leverage work was feature recovery and distribution alignment.
+- and the highest-leverage work was signal recovery and distribution alignment.
 
-If I turn those discussions into a practical action order, it becomes:
+If I translate that into a practical order of work, it becomes:
 
 1. Search for cross-domain signals before assuming the user is truly unobservable.
 2. Use those signals both as model inputs and as a way to define a training cohort closer to the low-activity segment.
@@ -211,12 +225,12 @@ If I turn those discussions into a practical action order, it becomes:
 
 ## Final takeaway
 
-What I appreciate most about those discussions is that they stayed grounded in reality.
+What mattered most in this case was staying grounded in the structure of the data.
 
-For sparse CTR problems, the first answer is not always a more complex model. Sometimes the first answer is to **look outside the target domain and recover signal from adjacent behavior**.
+For sparse CTR problems, the first answer is not always a more complex model. Sometimes the first answer is to **recover signal from adjacent behaviors outside the exact target surface**.
 
-And for partial distribution shift, the answer is not to assume the full population is always the right training population. The answer is to **align training with the subgroup you actually need to serve**.
+And for partial distribution shift, the answer is not to assume the full population is always the correct reference distribution. The answer is to **align the training distribution with the subgroup the system is actually expected to serve**.
 
-That combination, cross-domain signal recovery plus training-distribution alignment, felt like the real center of gravity of this meeting.
+That combination, cross-domain signal recovery plus training-distribution alignment, was the real center of gravity of the project.
 
 Everything else, including embeddings, sequence features, and calibration, becomes much more effective once those two principles are clear.
