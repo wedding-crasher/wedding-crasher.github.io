@@ -52,11 +52,13 @@ Once the business context was clear, the modeling objective itself was straightf
 
 What made this difficult was not the definition of the task, but the characteristics of the target segment. Low-activity users were not just another slice of the same population. They were colder, sparser, and behaviorally different from the general user base.
 
-That pushed the discussion toward two concrete questions:
+This was the real heart of the problem: the users who mattered most were exactly the users for whom the model had the least useful signal, and they were also not distributed like the broader population the model would normally learn from.
 
-> How do we build a reliable CTR model when the target segment has **extremely sparse in-domain behavioral signals**?
->
-> How do we train robustly when the training population is broad but **the deployment population is a narrower subgroup with a shifted feature distribution**?
+In practice, that split the modeling challenge into two concrete problems.
+
+Problem 1 was **extreme data sparsity**: the target users had too little in-domain behavioral history for the usual interaction features to be reliable.
+
+Problem 2 was **partial distribution shift**: the users we needed to serve were not distributed like the broader population the model would normally be trained on.
 
 
 ## Problem 1: Extreme data sparsity
